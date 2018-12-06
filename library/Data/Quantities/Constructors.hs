@@ -19,7 +19,7 @@ defaultDefinitions = readDefinitions defaultDefString
 -- >>> fromString "25 m/s"
 -- Right 25.0 meter / second
 -- >>> fromString "fakeunit"
--- Left (UndefinedUnitError "fakeunit")
+-- Left Undefined unit fakeunit
 -- >>> fromString "ft + 12in"
 -- Right 2.0 foot
 --
@@ -32,14 +32,14 @@ defaultDefinitions = readDefinitions defaultDefString
 -- >>> fromString "2 ft + 6 in => ft"
 -- Right 2.5 foot
 -- >>> fromString "m => 3 ft"
--- Left (ScalingFactorError 3.0 foot)
+-- Left Unexpected scaling factor 3.0 foot
 --
 -- Make sure not to use dimensional quantities in exponents.
 --
 -- >>> fromString "m ** 2"
 -- Right 1.0 meter ** 2
 -- >>> fromString "m ** (2s)"
--- Left (ParserError "Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )")
+-- Left Parse error: Used non-dimensionless exponent in ( Right 1.0 meter ) ** ( Right 2.0 second )
 fromString :: String -> Either (QuantityError Double) (Quantity Double)
 fromString s = case defaultDefinitions of
                     (Right d) -> parseExprQuant d s
