@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 
 -- | Base module for all data structures.
 module Data.Quantities.Data where
