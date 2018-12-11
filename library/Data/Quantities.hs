@@ -124,4 +124,4 @@ import Data.Quantities.DefaultUnits (defaultDefString)
 -- >>> let (Right m)  = fromString "m"
 -- >>> let (Right ft) = myFromString "ft"
 -- >>> convert m (units ft)
--- Left (DifferentDefinitionsError meter foot)
+-- Left The units meter and footcome from different definitions and can't be used together
