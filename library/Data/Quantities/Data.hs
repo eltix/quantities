@@ -123,8 +123,8 @@ instance Show a => Show (QuantityError a) where
   show e = case e of
     UndefinedUnitError unit -> "Undefined unit " ++ unit
     DimensionalityError u1 u2 ->
-      "Trying to convert between " ++ show u1 ++ " and " ++ show u2 ++
-        " which are of different dimensions"
+      "Trying to convert between [" ++ show u1 ++ "[ and [" ++ show u2 ++
+        "] which are of different dimensions"
     UnitAlreadyDefinedError unit -> "Unit already defined " ++ unit
     PrefixAlreadyDefinedError pfx ->
       "Prefix alredy defined " ++ pfx
