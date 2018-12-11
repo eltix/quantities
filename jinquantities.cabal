@@ -56,6 +56,7 @@ test-suite hspec
     main-is:          Spec.hs
     type:             exitcode-stdio-1.0
     build-depends:    base >=4 && < 5, jinquantities, hspec, containers, mtl, parsec
+    build-tool-depends: hspec-discover:hspec-discover
 
 test-suite hlint
     build-depends:    base, hlint
