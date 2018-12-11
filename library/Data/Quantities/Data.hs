@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 -- | Base module for all data structures.
 module Data.Quantities.Data where
@@ -7,6 +7,7 @@ import           Control.Exception (Exception)
 import           Data.List         (partition, sort)
 import qualified Data.Map          as M
 import           Data.Typeable     (Typeable)
+import           GHC.Generics      (Generic)
 
 -- $setup
 -- >>> import Control.Applicative
@@ -21,7 +22,7 @@ type Symbol = String
 -- > SimpleUnit { symbol = "meter", prefix = "milli", power = 2.0 }
 data SimpleUnit = SimpleUnit { symbol :: String
                              , prefix :: String
-                             , power  :: Double } deriving (Eq, Ord)
+                             , power  :: Double } deriving (Eq, Ord, Generic)
 
 instance Show SimpleUnit where
   show (SimpleUnit s pr p)
@@ -36,7 +37,7 @@ data CompoundUnit = CompoundUnit { defs   :: Definitions
                                  , sUnits :: [SimpleUnit]
                                    -- ^ List of SimpleUnits that is interpreted
                                    -- as the units being multiplied together.
-                                 } deriving (Eq, Ord)
+                                 } deriving (Eq, Ord, Generic)
 
 instance Show CompoundUnit where
   show (CompoundUnit _ us) = unwords . map showCompUnit' $ showSort us
@@ -69,7 +70,7 @@ data Quantity a = Quantity
                               --
                               -- >>> units <$> fromString "3.4 m/s^2"
                               -- Right meter / second ** 2
-  } deriving (Ord)
+  } deriving (Ord, Generic)
 
 
 -- | Convenience function to extract SimpleUnit collection from Quantity's
