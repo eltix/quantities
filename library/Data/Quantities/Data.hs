@@ -1,5 +1,3 @@
-{-# LANGUAGE DeriveDataTypeable #-}
-
 -- | Base module for all data structures.
 module Data.Quantities.Data where
 
@@ -28,6 +26,9 @@ instance Show SimpleUnit where
     | p == 1    = sym
     | otherwise = sym ++ " ** " ++ showPower p
     where sym = pr ++ s
+
+expSimpleUnit :: SimpleUnit -> Double -> SimpleUnit
+expSimpleUnit unit extraPower = unit { power = power unit * extraPower }
 
 -- | Data type to hold compound units, which are simple units multiplied
 -- together.
@@ -58,6 +59,13 @@ showPrettyNum :: (Show a, Num a) => a -> String
 showPrettyNum x = map (pretty M.!) $ show x
   where pretty = M.fromList $ zip "0123456789.-" "⁰¹²³⁴⁵⁶⁷⁸⁹·⁻"
 
+instance Semigroup CompoundUnit where
+  -- | Assumes (unchecked) that @defs u1 == defs u2@
+  u1 <> u2 = CompoundUnit (defs u1) (sUnits u1 <> sUnits u2)
+
+expUnit :: CompoundUnit -> Double -> CompoundUnit
+expUnit unit extraPower =
+  unit {sUnits = fmap (`expSimpleUnit` extraPower) (sUnits unit)}
 
 -- | Combination of magnitude and units.
 data Quantity a = Quantity
@@ -177,31 +185,29 @@ removeZeros []                        = []
 removeZeros (SimpleUnit _ _ 0.0 : xs) = removeZeros xs
 removeZeros (x:xs)                    = x : removeZeros xs
 
--- | Negate the powers of a list of SimpleUnits.
-invertUnits :: [SimpleUnit] -> [SimpleUnit]
-invertUnits = map invertSimpleUnit
+invertUnit :: CompoundUnit -> CompoundUnit
+invertUnit = (`expUnit` (-1))
 
 -- | Inverts unit by negating the power field.
 invertSimpleUnit :: SimpleUnit -> SimpleUnit
-invertSimpleUnit (SimpleUnit s pr p) = SimpleUnit s pr (-p)
+invertSimpleUnit = (`expSimpleUnit` (-1))
 
 -- | Multiplies two quantities.
 multiplyQuants :: (Num a) => Quantity a -> Quantity a -> Quantity a
 multiplyQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x * magnitude y
-        newUnits = (units x) { sUnits = units' x ++ units' y }
+        newUnits = units x <> units y
 
 -- | Divides two quantities.
 divideQuants :: (Fractional a) => Quantity a -> Quantity a -> Quantity a
 divideQuants x y = reduceUnits $ Quantity mag newUnits
   where mag      = magnitude x / magnitude y
-        newUnits = (units x) { sUnits = units' x ++ invertUnits (units' y) }
+        newUnits = units x <> invertUnit (units y)
 
 -- | Exponentiates a quantity with an integer
 exptQuants :: (Real a, Floating a) => Quantity a -> a -> Quantity a
-exptQuants (Quantity x u) y = reduceUnits $ Quantity (x**y) newUnits
-  where expUnits = map (\(SimpleUnit s pr p) -> SimpleUnit s pr (p * realToFrac y))
-        newUnits = u { sUnits = expUnits (sUnits u) }
+exptQuants (Quantity x u) y =
+  reduceUnits $ Quantity (x**y) (expUnit u (realToFrac y))
 
 -- | Data type for the three definition types. Used to hold definitions
 -- information when parsing.
@@ -269,3 +275,9 @@ unionDefinitions d1 d2 = Definitions {
   , prefixSynonyms = prefixSynonyms d1 `M.union` prefixSynonyms d2
   , unitTypes = unitTypes d1 `M.union` unitTypes d2
   , defStringHash = -1 }
+
+instance Semigroup Definitions where
+  (<>) = unionDefinitions
+
+instance Monoid Definitions where
+  mempty = emptyDefinitions

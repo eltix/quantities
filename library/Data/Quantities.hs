@@ -32,6 +32,7 @@ module Data.Quantities
        , multiplyQuants
        , divideQuants
        , exptQuants
+       , expUnit
          -- * Custom definitions
          -- $custom-defs
        , fromString'
@@ -43,12 +44,13 @@ module Data.Quantities
        ) where
 
 
-import Data.Quantities.Constructors (fromString, fromString', unitsFromString)
-import Data.Quantities.Convert (convert, convertBase, addQuants, subtractQuants,
-                                dimensionality)
-import Data.Quantities.Data
-import Data.Quantities.Definitions (readDefinitions)
-import Data.Quantities.DefaultUnits (defaultDefString)
+import           Data.Quantities.Constructors (fromString, fromString',
+                                               unitsFromString)
+import           Data.Quantities.Convert      (addQuants, convert, convertBase,
+                                               dimensionality, subtractQuants)
+import           Data.Quantities.Data
+import           Data.Quantities.DefaultUnits (defaultDefString)
+import           Data.Quantities.Definitions  (readDefinitions)
 
 
 -- $setup
