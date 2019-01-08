@@ -60,10 +60,8 @@ showPrettyNum x = map (pretty M.!) $ show x
   where pretty = M.fromList $ zip "0123456789.-" "⁰¹²³⁴⁵⁶⁷⁸⁹·⁻"
 
 instance Semigroup CompoundUnit where
-  u1 <> u2 = CompoundUnit (defs u1 <> defs u2) (sUnits u1 <> sUnits u2)
-
-instance Monoid CompoundUnit where
-  mempty = CompoundUnit mempty mempty
+  -- | Assumes (unchecked) that @defs u1 == defs u2@
+  u1 <> u2 = CompoundUnit (defs u1) (sUnits u1 <> sUnits u2)
 
 expUnit :: CompoundUnit -> Double -> CompoundUnit
 expUnit unit extraPower =
